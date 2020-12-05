@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\UseCase;
 
-use GuzzleHttp\Utils;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,7 +20,17 @@ class MakeConvertCommand extends Command
     /**
      *
      */
-    const CURRENCY_BTC = 'BTC';
+    private const CURRENCY_BTC = 'BTC';
+
+    /**
+     *
+     */
+    private const SELL = 'sell';
+
+    /**
+     *
+     */
+    private const BUY = 'buy';
 
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
@@ -33,56 +42,66 @@ class MakeConvertCommand extends Command
      */
     public function execute(Request $request): array
     {
-        /** @var array $params */
-        $params = Utils::jsonDecode($request->getContent(), true);
-
-        if ('' === trim((string)$params['currency_from'])) {
+        #region проверка входных параметров
+        if (!$request->request->has('currency_from')) {
             throw new InvalidArgumentException('Not found «currency_from» parameter');
         }
 
-        if ('' === trim((string)$params['currency_to'])) {
+        if (!$request->request->has('currency_to')) {
             throw new InvalidArgumentException('Not found «currency_to» parameter');
         }
 
-        if ('' === trim((string)$params['value'])) {
+        if (!$request->request->has('value')) {
             throw new InvalidArgumentException('Not found «value» parameter');
         }
 
-        if ($params['value'] < 0) {
+        if ($request->request->get('value') < 0) {
             throw new InvalidArgumentException('Parameter «value» must be greater than zero');
         }
 
-        $data = $this->getClient()->getData();
+        if ($request->request->get('value') < $this->getConfig()->getMinimalValueFromAnyCurrency()) {
+            throw new InvalidArgumentException('Parameter «value» must be greater then or equal to 0.01');
+        }
 
-        if (!array_key_exists($params['currency_from'], $data)
-            && $params['currency_from'] !== self::CURRENCY_BTC
+        $currencies = $this->getClient()->getData();
+
+        if (
+            !array_key_exists($request->request->get('currency_from'), $currencies)
+            && $request->request->get('currency_from') !== self::CURRENCY_BTC
         ) {
             throw new InvalidArgumentException('Unknown currency in «currency_from» parameter');
         }
 
         if (
-            !array_key_exists($params['currency_to'], $data)
-            && $params['currency_to'] !== self::CURRENCY_BTC
+            !array_key_exists($request->request->get('currency_to'), $currencies)
+            && $request->request->get('currency_to') !== self::CURRENCY_BTC
         ) {
             throw new InvalidArgumentException('Unknown currency in «currency_to» parameter');
         }
 
-        if ($params['currency_to'] === $params['currency_from']) {
+        if ($request->request->get('currency_to') === $request->request->get('currency_from')) {
             throw new InvalidArgumentException(
                 'Conversion is not available for self currency'
             );
         }
 
-        if ($params['currency_to'] !== self::CURRENCY_BTC && $params['currency_from'] !== self::CURRENCY_BTC) {
+        if (
+            $request->request->get('currency_to') !== self::CURRENCY_BTC
+            && $request->request->get('currency_from') !== self::CURRENCY_BTC
+        ) {
             throw new InvalidArgumentException(
                 'Conversion is available for ' . self::CURRENCY_BTC . ' and any other currency'
             );
         }
 
-        $params['value'] = (float)$params['value'];
+        #endregion проверка входных параметров
 
-
-        return $this->convert($params['currency_from'], $params['currency_to'], $params['value'], $data);
+        return $this->convert(
+            $request->request->get('currency_from'),
+            $request->request->get('currency_to'),
+            (float)$request->request->get('value'),
+            $currencies
+        );
     }
 
     /**
@@ -100,20 +119,38 @@ class MakeConvertCommand extends Command
             : $currencies[$to];
 
         $type = $from === self::CURRENCY_BTC
-            ? 'sell'
-            : 'buy';
+            ? self::SELL
+            : self::BUY;
 
-        $rate = $currency[$type] - $currency[$type] * $this->getConfig()['configuration']['commission'] / 100;
-
-        $convertedValue = 'sell' === $type ? $value * $rate : $value / $rate;
+        if (self::SELL === $type) {
+            $rate = $currency[$type] + $this->calculateComission($currency, $type);
+            $convertedValue = $value * $rate;
+            $convertedValue = round($convertedValue, 2);
+        } else {
+            $rate = $currency[$type] - $this->calculateComission($currency, $type);
+            $convertedValue = $value / $rate;
+            $convertedValue = round($convertedValue, 10);
+        }
 
         return [
             'currency_from'   => $from,
             'currency_to'     => $to,
             'value'           => $value,
-            'converted_value' => 'sell' === $type ? round($convertedValue, 10) : round($convertedValue, 2),
-            'rate'            => $rate,
-            'type'            => $type
+            'converted_value' => $convertedValue,
+            'rate'            => $rate
         ];
+    }
+
+    /**
+     * Получение суммы комиссии в зависимости от типа операции (продажа, покупка)
+     *
+     * @param array  $currency
+     * @param string $type
+     *
+     * @return float|int
+     */
+    private function calculateComission(array $currency, string $type)
+    {
+        return $currency[$type] * $this->getConfig()->getCommission() / 100;
     }
 }

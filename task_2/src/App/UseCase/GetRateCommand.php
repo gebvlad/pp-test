@@ -6,10 +6,15 @@ namespace App\UseCase;
 
 use Symfony\Component\HttpFoundation\Request;
 
+use function array_column;
 use function array_filter;
 use function array_map;
+use function array_multisort;
 use function explode;
 use function in_array;
+
+use const SORT_ASC;
+use const SORT_NUMERIC;
 
 /**
  * Class GetRateCommand
@@ -44,10 +49,15 @@ class GetRateCommand extends Command
 
         $data = array_map(
             function ($item) {
-                return $item['sell'] + $item['sell'] * $this->getConfig()['configuration']['commission'] / 100;
+                return [
+                    'sell' => $item['sell'] + $item['sell'] * $this->getConfig()->getCommission() / 100,
+                    'buy'  => $item['buy'] - $item['buy'] * $this->getConfig()->getCommission() / 100,
+                ];
             },
             $data
         );
+
+        array_multisort($data, array_column($data, 'sell'), SORT_NUMERIC, SORT_ASC);
 
         return $data;
     }

@@ -6,7 +6,8 @@ declare(strict_types=1);
 namespace App\UseCase;
 
 
-use App\BlockchainComClient;
+use App\Client\BlockchainComClient;
+use App\Config;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -17,28 +18,30 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class Command
 {
     /**
-     * @var \App\BlockchainComClient
+     * @var \App\Client\BlockchainComClient
      */
     private $client;
 
     /**
-     * @var array
+     * @var \App\Config
      */
     private $config;
 
     /**
      * MakeConvertCommand constructor.
      *
-     * @param \App\BlockchainComClient $client
-     * @param array                    $config
+     * @param \App\Client\BlockchainComClient $client
+     * @param \App\Config                     $config
      */
-    public function __construct(BlockchainComClient $client, array $config)
+    public function __construct(BlockchainComClient $client, Config $config)
     {
         $this->client = $client;
         $this->config = $config;
     }
 
     /**
+     * Выполнить команду
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return mixed
@@ -46,7 +49,7 @@ abstract class Command
     abstract public function execute(Request $request): array;
 
     /**
-     * @return \App\BlockchainComClient
+     * @return \App\Client\BlockchainComClient
      */
     public function getClient(): BlockchainComClient
     {
@@ -54,9 +57,9 @@ abstract class Command
     }
 
     /**
-     * @return array
+     * @return \App\Config
      */
-    public function getConfig(): array
+    public function getConfig(): Config
     {
         return $this->config;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Acl;
 
+use App\Config;
 use Symfony\Component\HttpFoundation\Request;
 
 use function in_array;
@@ -26,11 +27,11 @@ class AccessControl
     /**
      * AccessControl constructor.
      *
-     * @param array $config
+     * @param \App\Config $config
      */
-    public function __construct(array $config)
+    public function __construct(Config $config)
     {
-        $this->tokens = $config['configuration']['tokens'];
+        $this->tokens = $config->getTokens();
     }
 
     /**

@@ -1,10 +1,20 @@
 <?php
 
-namespace App;
+declare(strict_types=1);
 
+namespace App\Client;
+
+use App\Config;
+use GuzzleHttp\Client;
 use GuzzleHttp\Utils;
+use HttpResponseException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class BlockchainComClient
+ *
+ * @package App\Client
+ */
 class BlockchainComClient
 {
     /**
@@ -12,26 +22,31 @@ class BlockchainComClient
      */
     private $client;
 
+    /**
+     * @var string
+     */
     private $tickerMethod;
 
     /**
      * Client constructor.
      *
-     * @param \GuzzleHttp\Client $client
+     * @param \App\Config $config
      */
-    public function __construct(array $config)
+    public function __construct(Config $config)
     {
-        $this->client = new \GuzzleHttp\Client(
+        $this->client = new Client(
             [
-                'base_uri' => $config['configuration']['source_api'],
+                'base_uri' => $config->getSourceApi(),
                 'timeout'  => 2.0,
             ]
         );
 
-        $this->tickerMethod = $config['configuration']['ticker_method'];
+        $this->tickerMethod = $config->getTickerMethod();
     }
 
     /**
+     * Получить информацию о валютах
+     *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \HttpResponseException
@@ -41,7 +56,7 @@ class BlockchainComClient
         $response = $this->client->get($this->tickerMethod);
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {
-            throw new \HttpResponseException('Incorrect responce code', $response->getStatusCode());
+            throw new HttpResponseException('Incorrect responce code', $response->getStatusCode());
         }
 
         $content = $response->getBody()->getContents();

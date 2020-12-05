@@ -1,25 +1,25 @@
-configuration:
-    source_api: https://blockchain.info
-    ticker_method: /ticker
-    tokens:
-        # В постановке не сказано, что нужно реализоdать провайдер токентов
-        # и механизм авторизации.
-        # Предполагается, что генерация токена уже реализована и токены соответствуют требованиям
-        # 64 символа включающих в себя a-z A-Z 0-9 а так-же символы - и _
-        #
-        # Поэтому добавляется фиксированный набор токенов
-        - 7906e091-3cb1-412c-98d9-eb098881d846de3dd79-81d6-4bbd-a80e-ec49b
-        - 775d831c-f512-466f-9b59-df98e961c0e4de3dd79-81d6-4bbd-a80e-ec49b
-        - 30ae9e73-767b-403a-9b2b-b3505fe742b9de3dd79-81d6-4bbd-a80e-ec49b
-        - 3d1da22a-37a6-4b11-8aa9-6d3a428bd4c1de3dd79-81d6-4bbd-a80e-ec49b
-        - 7de3dd79-81d6-4bbd-a80e-ec49b343a46ede3dd79-81d6-4bbd-a80e-ec49b
-        - 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
-        - a52ccc08-bde6-489a-bf23-bcf0d159603ade3dd79-81d6-4bbd-a80e-ec49b
-        - 6aa9b756-ce9b-4297-b6ec-2e17cfe0b743de3dd79-81d6-4bbd-a80e-ec49b
-        - 021490bb-ef86-4569-abbd-99fa4bd7a5bcde3dd79-81d6-4bbd-a80e-ec49b
-        - 5d0b2552-9e15-440e-9c27-8f59e2ec8e2bde3dd79-81d6-4bbd-a80e-ec49b
-        - c84a17da-0d07-4ad3-a1ee-930f427b5580de3dd79-81d6-4bbd-a80e-ec49b
-        - fc8619c3-1e5b-4da5-afaf-b494e9932ca5de3dd79-81d6-4bbd-a80e-ec49b
-        - 6fa2b789-8090-44d1-afa2-a06905c13043de3dd79-81d6-4bbd-a80e-ec49b
-    commission: 2
+source_api: https://blockchain.info
+ticker_method: /ticker
+tokens:
+    # В постановке не сказано, что нужно реализоdать провайдер токентов
+    # и механизм авторизации.
+    # Предполагается, что генерация токена уже реализована и токены соответствуют требованиям
+    # 64 символа включающих в себя a-z A-Z 0-9 а так-же символы - и _
+    #
+    # Поэтому добавляется фиксированный набор токенов
+    - 7906e091-3cb1-412c-98d9-eb098881d846de3dd79-81d6-4bbd-a80e-ec49b
+    - 775d831c-f512-466f-9b59-df98e961c0e4de3dd79-81d6-4bbd-a80e-ec49b
+    - 30ae9e73-767b-403a-9b2b-b3505fe742b9de3dd79-81d6-4bbd-a80e-ec49b
+    - 3d1da22a-37a6-4b11-8aa9-6d3a428bd4c1de3dd79-81d6-4bbd-a80e-ec49b
+    - 7de3dd79-81d6-4bbd-a80e-ec49b343a46ede3dd79-81d6-4bbd-a80e-ec49b
+    - 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+    - a52ccc08-bde6-489a-bf23-bcf0d159603ade3dd79-81d6-4bbd-a80e-ec49b
+    - 6aa9b756-ce9b-4297-b6ec-2e17cfe0b743de3dd79-81d6-4bbd-a80e-ec49b
+    - 021490bb-ef86-4569-abbd-99fa4bd7a5bcde3dd79-81d6-4bbd-a80e-ec49b
+    - 5d0b2552-9e15-440e-9c27-8f59e2ec8e2bde3dd79-81d6-4bbd-a80e-ec49b
+    - c84a17da-0d07-4ad3-a1ee-930f427b5580de3dd79-81d6-4bbd-a80e-ec49b
+    - fc8619c3-1e5b-4da5-afaf-b494e9932ca5de3dd79-81d6-4bbd-a80e-ec49b
+    - 6fa2b789-8090-44d1-afa2-a06905c13043de3dd79-81d6-4bbd-a80e-ec49b
+commission: 2
+minimal_value_from_any_currency: 0.01
 

@@ -3,7 +3,11 @@
     "leocavalcante/siler"    : "^1.7",
     "symfony/http-foundation": "^5.2",
     "symfony/yaml"           : "^5.2",
-    "guzzlehttp/guzzle": "^7.0"
+    "guzzlehttp/guzzle": "^7.0",
+    "symfony/dependency-injection": "^5.2",
+    "ocramius/proxy-manager": "^2.2",
+    "symfony/proxy-manager-bridge": "^5.2",
+    "symfony/config": "^5.2"
   },
   "autoload": {
     "psr-4"   : {

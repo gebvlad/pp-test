@@ -1,0 +1,31 @@
+parameters:
+    config.file: '/../../resources/config.yaml'
+
+services:
+    config:
+        class: \App\Config
+        factory:
+            - \App\Config
+            - getInstance
+        arguments: [ '%config.file%' ]
+    
+    blockchain_com_client:
+        class: \App\Client\BlockchainComClient
+        arguments: [ '@config' ]
+        lazy: true
+    
+    acl:
+        class: \App\Acl\AccessControl
+        arguments: [ '@config' ]
+        lazy: true
+    
+    get_rate_command:
+        class: \App\UseCase\GetRateCommand
+        arguments: [ '@blockchain_com_client', '@config' ]
+        lazy: true
+    
+    make_convert_command:
+        class: \App\UseCase\MakeConvertCommand
+        arguments: [ '@blockchain_com_client', '@config' ]
+        lazy: true
+        

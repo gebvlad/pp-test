@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use App\Acl\AccessControl;
-use App\BlockchainComClient;
-use App\Config;
-use App\UseCase\GetRateCommand;
-use App\UseCase\MakeConvertCommand;
+use App\Container;
 use Siler\Http\Response;
 use Siler\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseHttp;
 
 $request = Request::createFromGlobals();
-$config = Config::getInstance();
-$client = new BlockchainComClient($config);
 
-$acl = new AccessControl($config);
+/** @var \App\Acl\AccessControl $acl */
+$acl = Container::get('acl');
 
 # проверка токена
 if (!$acl->checkToken($request)) {
@@ -37,48 +32,21 @@ if (!$acl->checkToken($request)) {
     );
 }
 
-$result = Route\get(
+# Обработка GET запросов
+Route\get(
     '/api/v2',
-    function () use ($request, $client, $config) {
-        switch ($request->query->get('method')) {
-            case 'rates':
-                $command = new GetRateCommand($client, $config);
-
-                $result = [
-                    'status' => 'success',
-                    'code'   => ResponseHttp::HTTP_OK,
-                    'data'   => $command->execute($request)
-                ];
-
-                break;
-
-            // код обработки других методов
-
-            default:
-                $result = [
-                    'status'  => 'error',
-                    'code'    => ResponseHttp::HTTP_BAD_REQUEST,
-                    'message' => 'Unknown GET method'
-                ];
-        }
-
-        return Response\json($result, $result['code']);
-    }
-);
-
-Route\post(
-    '/api/v2',
-    function () use ($request, $client, $config) {
+    function () use ($request) {
         $result = [
             'status'  => 'error',
             'code'    => ResponseHttp::HTTP_BAD_REQUEST,
-            'message' => 'Unknown POST method'
+            'message' => "Unknown {$request->getMethod()} method"
         ];
 
         try {
             switch ($request->query->get('method')) {
-                case 'convert':
-                    $command = new MakeConvertCommand($client, $config);
+                case 'rates':
+                    /** @var \App\UseCase\GetRateCommand $command */
+                    $command = Container::get('get_rate_command');
 
                     $result = [
                         'status' => 'success',
@@ -89,7 +57,44 @@ Route\post(
                     break;
                 // код обработки других методов
             }
-        } catch (InvalidArgumentException $e) {
+        } catch (Exception $e) {
+            $result = [
+                'status'  => 'error',
+                'code'    => ResponseHttp::HTTP_BAD_REQUEST,
+                'message' => $e->getMessage()
+            ];
+        }
+
+        return Response\json($result, $result['code']);
+    }
+);
+
+# Обработка POST запросов
+Route\post(
+    '/api/v2',
+    function () use ($request) {
+        $result = [
+            'status'  => 'error',
+            'code'    => ResponseHttp::HTTP_BAD_REQUEST,
+            'message' => "Unknown {$request->getMethod()} method"
+        ];
+
+        try {
+            switch ($request->query->get('method')) {
+                case 'convert':
+                    /** @var \App\UseCase\MakeConvertCommand $command */
+                    $command = Container::get('make_convert_command');
+
+                    $result = [
+                        'status' => 'success',
+                        'code'   => ResponseHttp::HTTP_OK,
+                        'data'   => $command->execute($request)
+                    ];
+
+                    break;
+                // код обработки других методов
+            }
+        } catch (Exception $e) {
             $result = [
                 'status'  => 'error',
                 'code'    => ResponseHttp::HTTP_BAD_REQUEST,
