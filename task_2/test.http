@@ -1,0 +1,70 @@
+###
+GET http://localhost:8000/api/v2?method=rates
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+
+###
+GET http://localhost:8000/api/v2?method=rates&currency=USD,RUB,EUR
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+
+
+###
+
+POST http://localhost:8000/api/v2?method=convert
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+Content-Type: application/json
+
+{
+  "currency_from": "BTC",
+  "currency_to"  : "USD",
+  "value"        : 0.01
+}
+
+###
+
+POST http://localhost:8000/api/v2?method=convert
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+Content-Type: application/json
+
+{
+  "currency_from": "RUB",
+  "currency_to"  : "RUB",
+  "value"        : 1.00
+}
+
+###
+POST http://localhost:8000/api/v2?method=convert
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+Content-Type: application/json
+
+{
+  "currency_from": "BTC",
+  "currency_to"  : "BTC",
+  "value"        : 1.00
+}
+
+######
+POST http://localhost:8000/api/v2?method=convert
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+Content-Type: application/json
+
+{
+  "currency_from": "RUB",
+  "currency_to"  : "USD",
+  "value"        : 1.00
+}
+
+###
+
+GET http://localhost:8000/api/v2?method=convert
+Authorization: Bearer 4292c44b-566a-42ef-ac52-a-z_A-Z__0-94292c44b-566a-42ef-ac5454545
+
+
+###
+PUT http://localhost:8000/api/v2?method=23
+
+###
+DELETE http://localhost:8000/api/v2?method=23
+
+
+###
+GET https://blockchain.info/ticker
