@@ -57,10 +57,16 @@ Route\get(
                     break;
                 // код обработки других методов
             }
-        } catch (Exception $e) {
+        } catch (InvalidArgumentException $e) {
             $result = [
                 'status'  => 'error',
                 'code'    => ResponseHttp::HTTP_BAD_REQUEST,
+                'message' => $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            $result = [
+                'status'  => 'error',
+                'code'    => ResponseHttp::HTTP_SERVICE_UNAVAILABLE,
                 'message' => $e->getMessage()
             ];
         }
@@ -94,10 +100,16 @@ Route\post(
                     break;
                 // код обработки других методов
             }
-        } catch (Exception $e) {
+        } catch (InvalidArgumentException $e) {
             $result = [
                 'status'  => 'error',
                 'code'    => ResponseHttp::HTTP_BAD_REQUEST,
+                'message' => $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            $result = [
+                'status'  => 'error',
+                'code'    => ResponseHttp::HTTP_SERVICE_UNAVAILABLE,
                 'message' => $e->getMessage()
             ];
         }
